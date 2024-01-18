@@ -1,3 +1,9 @@
+```
+nvm use 16
+npm install
+npm start
+```
+
 # Bootstrap Dashboard Kit
 
 The perfect starting point for your next web app built with Bootstrap 5. A free and minimal starter kit to build fast and modern dashboards and applications.
