@@ -15,6 +15,7 @@
   "dependencies": {
     "@polight/lego": "^2.0.0-beta",
     "@polight/store": "",
+    "page": "^1.11.6",
     "pocketbase": "^0.20.3"
   }
 }
