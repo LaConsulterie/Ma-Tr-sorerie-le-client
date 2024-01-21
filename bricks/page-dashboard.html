@@ -1,8 +1,18 @@
 <script>
   import store from '/js/store.js'
+  import utils from '/js/utils.js'
+
+  const { md5 } = utils
 
   const state = {
     user: {},
+    userAvatarUrl: "",
+  }
+
+  const methods = {
+    getUserAvatarUrl() {
+      return `https://gravatar.com/avatar/${md5(this.state.user.email.toLowerCase())}?d=default&s=80`
+    }
   }
 
   function setup() {
@@ -33,12 +43,6 @@
             <!-- Toggle -->
             <a href="#" id="sidebarAvatar" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
               aria-expanded="false">
-              <div class="avatar-parent-child">
-                <img alt="Image Placeholder"
-                  src="https://images.unsplash.com/photo-1548142813-c348350df52b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=3&w=256&h=256&q=80"
-                  class="avatar rounded-circle">
-                <span class="avatar-child avatar-badge bg-success"></span>
-              </div>
             </a>
             <!-- Menu -->
             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="sidebarAvatar">
@@ -53,7 +57,6 @@
           <!-- Navigation -->
 
           <ul class="navbar-nav">
-
 
             <li class="nav-item">
               <a class="nav-link" href="/">
@@ -71,20 +74,7 @@
                 <i class="bi bi-lock-fill"></i> Authentifier
               </a>
             </li>
-
           </ul>
-
-
-          <!-- Push content down -->
-          <div class="mt-auto"></div>
-          <!-- Documentation -->
-          <div class="px-5 my-5 d-none d-lg-block">
-            <a href="#modalGetPro" data-bs-toggle="modal"
-              class="btn gradient-bottom-left start-indigo-500 end-purple-500 end-indigo-500-hover text-white border-0 w-full">
-              <i class="bi bi-unlock-fill me-2"></i>
-              Get PRO access
-            </a>
-          </div>
         </div>
       </div>
     </nav>
@@ -104,10 +94,17 @@
                 <h1 class="h2 ls-tight">
                   <span class="d-inline-block me-3">👋</span>Bonjour ${state.user.first_name} !
                 </h1>
+                
               </div>
               <!-- Actions -->
               <div class="col-sm-6 col-12 text-sm-end">
                 <div class="hstack gap-2 justify-content-end">
+                  <div>
+                    <div class="avatar-parent-child">
+                      <img alt="Image Placeholder" :src="this.getUserAvatarUrl()" class="avatar rounded-circle">
+                      <span class="avatar-child avatar-badge bg-success"></span>
+                    </div>
+                  </div>
                   <a href="https://laconsulterie.com" class="btn btn-sm" target="_blank">
                     <span class=" pe-2">
                       <i class="bi bi-website"></i>
@@ -144,9 +141,9 @@
               <div class="card-header border-bottom">
                 <h5 class="mb-0">Livrables</h5>
               </div>
+              <p :if="!state.user.deliveries.length" class="text-sm lh-relaxed m-4">Aucun projet livré pour l'instant…</p>
               <div class="table-responsive">
-
-                <table class="table table-hover table-nowrap">
+                <table :if="state.user.deliveries.length" class="table table-hover table-nowrap">
                   <thead class="table-light">
                     <tr>
                       <th scope="col">Projet</th>
