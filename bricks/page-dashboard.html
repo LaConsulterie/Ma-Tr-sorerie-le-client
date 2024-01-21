@@ -1,28 +1,12 @@
 <script>
-  import PocketBase from './node_modules/pocketbase/dist/pocketbase.es.js'
+  import store from '/js/store.js'
 
   const state = {
-    user: "",
-    projects: [],
-    invoices: [],
-    deliveries: [],
-    totals: { deliveries: 0 }
+    user: {},
   }
 
-  async function connected() {
-    const pb = new PocketBase('http://127.0.0.1:8090')
-
-    const auth = await pb.collection('contractors').authWithPassword('mcolin@gmail.com', 'mcolin@gmail.com', { expand: "projects.client,deliveries(contractor).project,invoices(contractor)" })
-    const user = auth.record
-    const projects = user.expand.projects
-    const deliveries = user.expand["deliveries(contractor)"]
-    const invoices = user.expand["invoices(contractor)"]
-    const totals = {
-      deliveries: deliveries.reduce((total, delivery) => total + delivery.amount, 0),
-      pending: deliveries.filter(d => d.status == "").reduce((total, d) => total + d.amount, 0),
-      paid: deliveries.filter(d => d.status === "paid").reduce((total, d) => total + d.amount, 0),
-    }
-    this.render({ user, projects, deliveries, invoices, totals })
+  function setup() {
+    store.subscribe(this, Object.keys(state))
   }
 </script>
 
@@ -59,8 +43,6 @@
             <!-- Menu -->
             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="sidebarAvatar">
               <a href="#" class="dropdown-item">Profile</a>
-              <a href="#" class="dropdown-item">Settings</a>
-              <a href="#" class="dropdown-item">Billing</a>
               <hr class="dropdown-divider">
               <a href="#" class="dropdown-item">Logout</a>
             </div>
@@ -74,65 +56,23 @@
 
 
             <li class="nav-item">
-              <a class="nav-link" href="/index.html">
+              <a class="nav-link" href="/">
                 <i class="bi bi-bar-chart-fill"></i> Dashboard
               </a>
             </li>
 
-            <li class="nav-item">
-              <a class="nav-link" href="/profile.html">
-                <i class="bi bi-person-circle"></i> Profile
+            <li :hidden="!state.user.id" class="nav-item">
+              <a class="nav-link" href="/logout">
+                <i class="bi bi-lock-fill"></i> Quitter
               </a>
             </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="/settings.html">
-                <i class="bi bi-gear-fill"></i> Settings
-              </a>
-            </li>
-
-            <li class="nav-item">
+            <li :hidden="state.user.id" class="nav-item">
               <a class="nav-link" href="/login">
-                <i class="bi bi-lock-fill"></i> Login
+                <i class="bi bi-lock-fill"></i> Authentifier
               </a>
             </li>
 
           </ul>
-
-          <!-- Divider -->
-          <hr class="navbar-divider my-5 opacity-70">
-
-
-
-          <ul class="navbar-nav">
-
-            <li>
-              <span class="nav-link text-xs font-semibold text-uppercase text-muted ls-wide">
-                Resources
-              </span>
-            </li>
-
-
-            <li class="nav-item">
-              <a class="nav-link" href="https://bit.ly/3uCYY2X">
-                <i class="bi bi-hand-index"></i> Hot it works
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="https://webpixels.io/docs">
-                <i class="bi bi-journals"></i> Docs
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="https://clever-dashboard.webpixels.work/">
-                <i class="bi bi-mouse3"></i> Premium Version
-              </a>
-            </li>
-
-          </ul>
-
 
 
           <!-- Push content down -->
@@ -191,11 +131,11 @@
         <div class="container-fluid vstack gap-6 row">
           <!-- Card stats -->
           <div class="row g-6" id="amounts">
-            <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total des livrables" content="${state.totals.deliveries}€"
+            <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total des livrables" content="${state.user.totals.deliveries}€"
               description="livrés en tout" icon="credit-card" color="tertiary"></lg-card-stats>
-            <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total reçu" content="${state.totals.paid}€"
+            <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total reçu" content="${state.user.totals.paid}€"
               description="déjà encaissé" icon="minecart-loaded" color="success"></lg-card-stats>
-            <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total en attente" content="${state.totals.pending}€"
+            <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total en attente" content="${state.user.totals.pending}€"
               description="bientôt disponibles" icon="clock-history" color="warning"></lg-card-stats>
           </div>
           <div class="row">
@@ -218,8 +158,8 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr :for="delivery in state.deliveries">
-                      <td>${delivery.expand.project.name}</td>
+                    <tr :for="delivery in state.user.deliveries">
+                      <td>${delivery.expand?.project.name ||  "info"}</td>
                       <td>${new Date(delivery.start).toLocaleDateString()}</td>
                       <td>${new Date(delivery.end).toLocaleDateString()}</td>
                       <td>${delivery.amount}€</td>
@@ -246,7 +186,7 @@
                 </div>
                 <div class="card-body py-0 position-relative">
                   <div class="list-group list-group-flush">
-                    <lg-list-item :for="project in state.projects"
+                    <lg-list-item :for="project in state.user.projects"
                       :title="project.name"
                       :description="project.expand.client.name"
                       :image="project.logo"

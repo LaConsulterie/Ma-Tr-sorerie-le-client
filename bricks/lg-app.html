@@ -1,18 +1,49 @@
 <script>
-  import page from './node_modules/page/page.mjs'
+  import store from '/js/store.js'
+  const page = store.page
 
   const state = {
     page: "dashboard",
+    user: {},
+    notification: {},
+  }
+
+  function setup() {
+    store.subscribe(this, ["notification", "user"])
+  }
+
+  function authRequired(ctx, next) {
+    if(store.state.user.id) next()
+    else page.redirect("/login")
   }
 
   async function connected() {
-    page('/', () => this.render({ page: state.page }))
+    page('/', authRequired, () => this.render({ page: state.page }))
     page('/login', () => this.render({ page: "login" }))
-    page()
+    page('/logout', () => {
+      store.actions.logout()
+      this.render()
+      store.actions.redirect()
+    })
+    page({ hashbang: true })
   }
 </script>
 
 <template>
+  <div :if="state.notification.message" class="alert alert-${state.notification.type}" role="alert">
+    ${state.notification.message}
+  </div>
+
   <page-dashboard :if="state.page == 'dashboard'"></page-dashboard>
   <page-login :if="state.page == 'login'"></page-login>
 </template>
+
+<style>
+  [role="alert"] {
+    position:fixed;
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    z-index: 1;
+  }
+</style>
