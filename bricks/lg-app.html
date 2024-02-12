@@ -5,6 +5,7 @@
 
   const state = {
     page: "dashboard",
+    layout: false,
     user: {},
     notification: {},
   }
@@ -19,13 +20,14 @@
   }
 
   async function connected() {
-    page('/', authRequired, () => this.render({ page: state.page }))
-    page('/login', () => this.render({ page: "login" }))
+    page('/', authRequired, () => this.render({ layout: true, page: state.page }))
+    page('/login', () => this.render({ layout: false, page: "login" }))
     page('/logout', () => {
       store.actions.logout()
-      this.render()
+      this.render(state)
       store.actions.redirect()
     })
+    page('/deliveries/add', () => this.render({ layout: true, page: "delivery-add" }))
     page({ hashbang: true })
   }
 </script>
@@ -34,9 +36,12 @@
   <div :if="state.notification.message" class="alert alert-${state.notification.type}" role="alert">
     ${state.notification.message}
   </div>
-
-  <page-dashboard :if="state.page == 'dashboard'"></page-dashboard>
+  
   <page-login :if="state.page == 'login'"></page-login>
+  <layout-main :if="state.layout">
+    <page-dashboard :if="state.page == 'dashboard'"></page-dashboard>
+    <page-delivery-add :if="state.page == 'delivery-add'"></page-delivery-add>
+  </page-main>
 </template>
 
 <style>

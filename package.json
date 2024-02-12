@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "author": "La Consulterie",
   "scripts": {
-    "dev": "lego -w",
+    "dev": "concurrently 'lego -w' 'http-server'",
     "build": "lego"
   },
   "repository": {
@@ -17,5 +17,9 @@
     "@polight/store": "",
     "page": "^1.11.6",
     "pocketbase": "^0.20.3"
+  },
+  "devDependencies": {
+    "concurrently": "*",
+    "http-server": "*"
   }
 }

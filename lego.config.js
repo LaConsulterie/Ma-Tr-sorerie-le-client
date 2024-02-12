@@ -1,3 +1,4 @@
 export default {
-  useShadowDOM: false,
+  useShadowDOM: true, // mandatory for using slots
+  preStyle: `@import url('/css/lego.css');`,
 }

@@ -4,7 +4,7 @@
   const state = {}
 
   const methods = {
-    login() {
+    login(event) {
       event.preventDefault()
       const { email, password } = [...event.target.elements]
         .filter(n => n.name)

@@ -21,78 +21,115 @@
 </script>
 
 <template>
-  <div class="row g-6" id="amounts">
-    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total des livrables"
-      content="${state.user.totals.deliveries}€" description="livrés en tout" icon="credit-card" color="tertiary">
-    </lg-card-stats>
-    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total reçu" content="${state.user.totals.paid}€"
-      description="déjà encaissé" icon="minecart-loaded" color="success"></lg-card-stats>
-    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total en attente" content="${state.user.totals.pending}€"
-      description="bientôt disponibles" icon="clock-history" color="warning"></lg-card-stats>
-  </div>
-  <div class="row">
-    <!-- Livrables -->
-    <div class="card col col-xl-8">
-      <div class="card-header border-bottom">
-        <h5 class="mb-0">Livrables</h5>
-      </div>
-      <p :if="!state.user.deliveries.length" class="text-sm lh-relaxed m-4">Aucun projet livré pour l'instant…</p>
-      <div class="table-responsive">
-        <table :if="state.user.deliveries.length" class="table table-hover table-nowrap">
-          <thead class="table-light">
-            <tr>
-              <th scope="col">Projet</th>
-              <th scope="col">Du</th>
-              <th scope="col">Au</th>
-              <th scope="col">Montant</th>
-              <th scope="col">État</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr :for="delivery in state.user.deliveries">
-              <td>${delivery.expand?.project.name || "info"}</td>
-              <td>${new Date(delivery.start).toLocaleDateString()}</td>
-              <td>${new Date(delivery.end).toLocaleDateString()}</td>
-              <td>${delivery.amount}€</td>
-              <td>
-                <span :if="delivery.status == ''" class="badge badge-pill bg-warning me-2">
-                  <i class="bi bi-hourglass-split"></i> En attente
-                </span>
-                <span :if="delivery.status == 'paid'" class="badge badge-pill bg-success me-2">
-                  <i class="bi bi-check-circle"></i> Payé
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <footer>
-        <a class="btn" href="/deliveries/add">Ajouter un livrable</button>
-      </footer>
-    </div>
-    <!-- Mes projets -->
-    <div class="col col-xl-4">
-      <div class="card h-lg-full">
-        <div class="card-header">
-          <div class="d-flex align-items-center">
-            <h5 class="mb-0">Mes projets</h5>
+  <div class="d-flex flex-column flex-lg-row h-lg-full bg-surface-secondary">
+    <!-- Sidebar -->
+    <nav
+      class="navbar show navbar-vertical h-lg-screen navbar-expand-lg px-0 py-3 navbar-light bg-white border-bottom border-bottom-lg-0 border-end-lg"
+      id="navbarVertical">
+      <div class="container-fluid">
+        <!-- Toggler -->
+        <button class="navbar-toggler ms-n2" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarCollapse"
+          aria-controls="sidebarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Brand -->
+        <a class="navbar-brand py-lg-2 mb-lg-5 px-lg-6 me-0" href="/">
+          <img src="/img/logos/clever-primary.svg" alt="...">
+        </a>
+        <!-- User menu (mobile) -->
+        <div class="navbar-user d-lg-none">
+          <!-- Dropdown -->
+          <div class="dropdown">
+            <!-- Toggle -->
+            <a href="#" id="sidebarAvatar" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false">
+            </a>
+            <!-- Menu -->
+            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="sidebarAvatar">
+              <a href="#" class="dropdown-item">Profile</a>
+              <hr class="dropdown-divider">
+              <a href="#" class="dropdown-item">Logout</a>
+            </div>
           </div>
         </div>
-        <div class="card-body py-0 position-relative">
-          <div class="list-group list-group-flush">
-            <lg-list-item :for="project in state.user.projects" :title="project.name"
-              :description="project.expand.client.name" :image="project.logo" body=""
-              class="list-group-item px-0 position-relative hstack flex-wrap">
-            </lg-list-item>
-          </div>
+        <!-- Collapse -->
+        <div class="collapse navbar-collapse" id="sidebarCollapse">
+          <!-- Navigation -->
+
+          <ul class="navbar-nav">
+
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="bi bi-bar-chart-fill"></i> Dashboard
+              </a>
+            </li>
+
+            <li :hidden="!state.user.id" class="nav-item">
+              <a class="nav-link" href="/logout">
+                <i class="bi bi-lock-fill"></i> Quitter
+              </a>
+            </li>
+            <li :hidden="state.user.id" class="nav-item">
+              <a class="nav-link" href="/login">
+                <i class="bi bi-lock-fill"></i> Authentifier
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
-    </div>
-  </div>
-  <!-- Row 3 -->
-  <!-- Latest tasks -->
-  <!-- <div class="col-xl-8">
+    </nav>
+
+
+    <!-- Content -->
+    <div class="h-screen flex-grow-1 overflow-y-lg-auto">
+
+      <!-- Header -->
+
+      <header class="bg-surface-primary border-bottom py-6">
+        <div class="container-fluid">
+          <div class="mb-npx">
+            <div class="row align-items-center">
+              <div class="col-sm-6 col-12 mb-4 mb-sm-0">
+                <!-- Title -->
+                <h1 class="h2 ls-tight">
+                  <span class="d-inline-block me-3">👋</span>Bonjour ${state.user.first_name} !
+                </h1>
+
+              </div>
+              <!-- Actions -->
+              <div class="col-sm-6 col-12 text-sm-end">
+                <div class="hstack gap-2 justify-content-end">
+                  <div>
+                    <div class="avatar-parent-child">
+                      <img alt="Image Placeholder" :src="this.getUserAvatarUrl()" class="avatar rounded-circle">
+                      <span class="avatar-child avatar-badge bg-success"></span>
+                    </div>
+                  </div>
+                  <a href="https://laconsulterie.com" class="btn btn-sm" target="_blank">
+                    <span class=" pe-2">
+                      <i class="bi bi-website"></i>
+                    </span>
+                    <span>Visiter La Consulterie</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+
+
+
+      <!-- Main -->
+      <main class="py-6 bg-surface-secondary">
+
+        <!-- Container -->
+        <div class="container-fluid vstack gap-6 row">
+          <slot></slot>
+          <!-- Row 3 -->
+          <!-- Latest tasks -->
+          <!-- <div class="col-xl-8">
             <div class="card">
               <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
@@ -210,4 +247,38 @@
               </div>
             </div>
           </div> -->
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal" tabindex="-1" id="modalGetPro" aria-labelledby="modalGetProLabel">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content overflow-hidden">
+        <div class="pt-16 px-md-5 pb-10 text-center bg-dark">
+          <!-- Title -->
+          <h1 class="text-white font-bolder mb-6">Upgrade to Pro</h1>
+
+          <!-- Text -->
+          <p class="text-white text-opacity-90 px-lg-5 mb-4">
+            One of the benefits you get when working with our themes, free or premium, is that you can extend the
+            default features with any of the <a href="https://bit.ly/3Gx0sy9">components and templates</a> available on
+            Webpixels.
+          </p>
+          <p class="text-xs text-uppercase text-opacity-90 font-bold text-warning ls-relaxed mb-12 px-lg-5">
+            With no additional setup
+          </p>
+          <!-- Button -->
+          <div class="hstack gap-3 justify-content-center mb-8">
+            <a href="https://bit.ly/3uCYY2X" class="btn btn-outline-white">Learn more</a>
+            <a href="https://bit.ly/362yD4b" class="btn btn-primary">Get access now<i
+                class="bi bi-arrow-right ms-2"></i></a>
+          </div>
+
+          <!-- Image -->
+          <img class="w-2/3" src="/svg/illustrations/development.svg" />
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
