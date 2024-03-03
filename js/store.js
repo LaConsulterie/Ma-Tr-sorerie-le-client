@@ -1,8 +1,9 @@
-import { LegoStore } from './vendors/store.js'
-import PocketBase from '/node_modules/pocketbase/dist/pocketbase.es.js'
-import page from '/node_modules/page/page.mjs'
+import config from "../config.js"
+import { LegoStore } from "./vendors/store.js"
+import PocketBase from "/node_modules/pocketbase/dist/pocketbase.es.js"
+import page from "/node_modules/page/page.mjs"
 
-const pb = new PocketBase('http://127.0.0.1:8090')
+const pb = new PocketBase(config.apiUrl)
 
 const state = {
   user: {},
@@ -35,7 +36,7 @@ const actions = {
     if (!email || !password) return
 
     try {
-      const auth = await pb.collection('contractors').authWithPassword(email, password,
+      const auth = await pb.collection("contractors").authWithPassword(email, password,
         { expand: "projects.client,deliveries(contractor).project" })
       localStorage.setItem("auth", JSON.stringify(auth.record))
       this.actions.authenticate(auth.record)
