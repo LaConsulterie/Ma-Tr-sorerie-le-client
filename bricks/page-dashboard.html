@@ -22,19 +22,21 @@
 
 <template>
   <div class="row g-6" id="amounts">
-    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total des livrables"
-      content="${state.user.totals.deliveries}€" description="livrés en tout" icon="credit-card" color="tertiary">
+    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total clients"
+      content="${state.user.totals.deliveries}€" description="Total facturé aux différents clients" icon="credit-card" color="tertiary">
     </lg-card-stats>
-    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total reçu" content="${state.user.totals.paid}€"
-      description="déjà encaissé" icon="minecart-loaded" color="success"></lg-card-stats>
+
+    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Bourse disponible" content="${state.user.totals.paid}€"
+      description="Total reçu des différents livrables validés" icon="minecart-loaded" color="success"></lg-card-stats>
+
     <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total en attente" content="${state.user.totals.pending}€"
-      description="bientôt disponibles" icon="clock-history" color="warning"></lg-card-stats>
+      description="Total en attente de validation des clients" icon="clock-history" color="warning"></lg-card-stats>
   </div>
   <div class="row">
     <!-- Livrables -->
     <div class="card g-6">
       <div class="card-header border-bottom">
-        <h5 class="mb-0">Livrables</h5>
+        <h5 class="mb-0">Opérations</h5>
       </div>
       <p :if="!state.user.deliveries.length" class="text-sm lh-relaxed m-4">Aucun projet livré pour l'instant…</p>
       <div class="table-responsive">
