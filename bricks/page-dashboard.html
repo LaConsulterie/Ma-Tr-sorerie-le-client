@@ -22,14 +22,14 @@
 
 <template>
   <div class="row g-6" id="amounts">
-    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total clients"
-      content="${state.user.totals.deliveries}€" description="Total facturé aux différents clients" icon="credit-card" color="tertiary">
+    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total des gains"
+      :content="state.user.totals.deliveries.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })" description="Total facturé aux différents clients" icon="credit-card" color="tertiary">
     </lg-card-stats>
 
-    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Bourse disponible" content="${state.user.totals.paid}€"
+    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Cagnotte disponible" :content="state.user.totals.paid.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })"
       description="Total reçu des différents livrables validés" icon="minecart-loaded" color="success"></lg-card-stats>
 
-    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total en attente" content="${state.user.totals.pending}€"
+    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Cagnotte en attente" :content="state.user.totals.pending.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })"
       description="Total en attente de validation des clients" icon="clock-history" color="warning"></lg-card-stats>
   </div>
   <div class="row">
@@ -53,25 +53,25 @@
           </thead>
           <tbody>
             <tr :for="delivery in state.user.deliveries">
-              <td>${delivery.expand?.project.name || "info"}</td>
+              <td>${JSON.stringify(delivery.expand)}</td>
               <td>${new Date(delivery.start).toLocaleDateString()}</td>
               <td>${new Date(delivery.end).toLocaleDateString()}</td>
-              <td>${delivery.amount}€</td>
+              <td>${delivery.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}</td>
               <td>
-                <span :if="delivery.status == ''" class="badge badge-pill bg-warning me-2">
+                <span :if="delivery.status == 'pending'" class="badge badge-pill bg-warning me-2">
                   <i class="bi bi-hourglass-split"></i> En attente
                 </span>
                 <span :if="delivery.status == 'paid'" class="badge badge-pill bg-success me-2">
-                  <i class="bi bi-check-circle"></i> Payé
+                  <i class="bi bi-check-circle"></i> Validé
                 </span>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-      <footer>
+      <!-- <footer>
         <a class="btn" href="/deliveries/add">Ajouter un livrable</button>
-      </footer>
+      </footer> -->
     </div>
     <!-- Mes projets -->
     <div class="col col-xl-4">

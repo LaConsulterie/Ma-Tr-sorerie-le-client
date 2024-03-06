@@ -23,9 +23,9 @@ const actions = {
       projects: userData.expand?.projects || [],
       deliveries,
       totals: {
-        deliveries: deliveries.reduce((total, delivery) => total + delivery.amount, 0),
-        pending: deliveries.filter(d => d.status == "").reduce((total, d) => total + d.amount, 0),
-        paid: deliveries.filter(d => d.status === "paid").reduce((total, d) => total + d.amount, 0),
+        deliveries: deliveries.reduce((total, delivery) => total + delivery.amount, 0) * .95,
+        pending: deliveries.filter(d => d.status == "pending").reduce((total, d) => total + d.amount, 0) * .95,
+        paid: deliveries.filter(d => d.status === "paid").reduce((total, d) => total + d.amount, 0) * .95,
       }
     })
     this.setState({ user, notification: state.notification /* reset notifications */ })
