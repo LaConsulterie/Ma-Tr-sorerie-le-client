@@ -15,7 +15,7 @@ class User {
       totals: {
         deliveries: deliveries.reduce((total, delivery) => total + delivery.amount, 0) * .95,
         pending: deliveries.filter(d => d.status == "pending").reduce((total, d) => total + d.amount, 0) * .95,
-        paid: deliveries.filter(d => d.status === "paid").reduce((total, d) => total + d.amount, 0) * .95,
+        vaidated: deliveries.filter(d => d.status === "vaidated").reduce((total, d) => total + d.amount, 0) * .95,
       }
     })
   }
