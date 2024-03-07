@@ -8,6 +8,7 @@ const pb = new PocketBase(config.apiUrl)
 class User {
   constructor(userData = {}) {
     const deliveries = userData.expand?.["deliveries(contractor)"] || []
+    deliveries.sort((a, b) => a.end > b.end ? -1 : 1)
     Object.assign(this, userData, {
       projects: userData.expand?.projects || [],
       deliveries,
@@ -36,10 +37,12 @@ const actions = {
     const contractorExpands = { expand: "projects.client,deliveries(contractor).project" }
     
     const userData = await pb.collection('contractors').authRefresh(contractorExpands)
+    this.setState({ user: new User(userData.record), notification: state.notification /* reset notifications */ })
+    
     pb.collection('contractors').subscribe("*", (e) => {
       this.setState({ user: new User(e.record) })
     }, contractorExpands)
-    this.setState({ user: new User(userData.record), notification: state.notification /* reset notifications */ })
+    
     this.actions.redirect()
   },
 
