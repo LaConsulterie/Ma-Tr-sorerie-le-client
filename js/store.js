@@ -15,7 +15,7 @@ class User {
       totals: {
         deliveries: deliveries.reduce((total, delivery) => total + delivery.amount, 0) * .95,
         pending: deliveries.filter(d => d.status == "pending").reduce((total, d) => total + d.amount, 0) * .95,
-        validated: deliveries.filter(d => d.status === "vaidated").reduce((total, d) => total + d.amount, 0) * .95,
+        validated: deliveries.filter(d => d.status === "validated").reduce((total, d) => total + d.amount, 0) * .95,
       }
     })
   }
