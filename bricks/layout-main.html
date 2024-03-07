@@ -11,7 +11,7 @@
 
   const methods = {
     getUserAvatarUrl() {
-      return `https://gravatar.com/avatar/${md5(this.state.user.email.toLowerCase())}?d=default&s=80`
+      return `https://gravatar.com/avatar/${md5(this.state.user.email.toLowerCase())}?d=mp&s=80`
     }
   }
 
@@ -101,7 +101,7 @@
                 <div class="hstack gap-2 justify-content-end">
                   <div>
                     <div class="avatar-parent-child">
-                      <img alt="Image Placeholder" :src="this.getUserAvatarUrl()" class="avatar rounded-circle">
+                      <img alt="Image Placeholder" :src="this.getUserAvatarUrl()" class="avatar rounded-circle" title="${state.user.first_name} ${state.user.last_name}">
                       <span class="avatar-child avatar-badge bg-success"></span>
                     </div>
                   </div>
