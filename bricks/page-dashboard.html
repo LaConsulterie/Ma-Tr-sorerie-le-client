@@ -23,7 +23,7 @@
 <template>
   <div class="row g-6" id="amounts">
     <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total des gains"
-      :content="state.user.totals.deliveries.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })" description="Total facturé aux différents clients" icon="credit-card" color="tertiary">
+      :content="state.user.totals.deliveries.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })" description="Total de la cagnotte" icon="credit-card" color="tertiary">
     </lg-card-stats>
 
     <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Cagnotte disponible" :content="state.user.totals.paid.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })"
@@ -53,7 +53,7 @@
           </thead>
           <tbody>
             <tr :for="delivery in state.user.deliveries">
-              <td>${JSON.stringify(delivery.expand)}</td>
+              <td>Livrable</td>
               <td>${new Date(delivery.start).toLocaleDateString()}</td>
               <td>${new Date(delivery.end).toLocaleDateString()}</td>
               <td>${delivery.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}</td>
@@ -74,7 +74,7 @@
       </footer> -->
     </div>
     <!-- Mes projets -->
-    <div class="col col-xl-4">
+    <!-- <div class="col col-xl-4">
       <div class="card h-lg-full">
         <div class="card-header">
           <div class="d-flex align-items-center">
@@ -91,7 +91,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
   <!-- Row 3 -->
   <!-- Latest tasks -->
   <!-- <div class="col-xl-8">

@@ -5,8 +5,23 @@ import page from "/node_modules/page/page.mjs"
 
 const pb = new PocketBase(config.apiUrl)
 
+class User {
+  constructor(userData = {}) {
+    const deliveries = userData.expand?.["deliveries(contractor)"] || []
+    Object.assign(this, userData, {
+      projects: userData.expand?.projects || [],
+      deliveries,
+      totals: {
+        deliveries: deliveries.reduce((total, delivery) => total + delivery.amount, 0) * .95,
+        pending: deliveries.filter(d => d.status == "pending").reduce((total, d) => total + d.amount, 0) * .95,
+        paid: deliveries.filter(d => d.status === "paid").reduce((total, d) => total + d.amount, 0) * .95,
+      }
+    })
+  }
+}
+
 const state = {
-  user: {},
+  user: new User(),
   notification: { type: "danger", message: "" },
 }
 
@@ -17,18 +32,14 @@ const actions = {
     }
   },
 
-  authenticate(userData = {}) {
-    const deliveries = userData.expand?.["deliveries(contractor)"] || []
-    const user = Object.assign({}, userData, {
-      projects: userData.expand?.projects || [],
-      deliveries,
-      totals: {
-        deliveries: deliveries.reduce((total, delivery) => total + delivery.amount, 0) * .95,
-        pending: deliveries.filter(d => d.status == "pending").reduce((total, d) => total + d.amount, 0) * .95,
-        paid: deliveries.filter(d => d.status === "paid").reduce((total, d) => total + d.amount, 0) * .95,
-      }
-    })
-    this.setState({ user, notification: state.notification /* reset notifications */ })
+  async authenticate() {
+    const contractorExpands = { expand: "projects.client,deliveries(contractor).project" }
+    
+    const userData = await pb.collection('contractors').authRefresh(contractorExpands)
+    pb.collection('contractors').subscribe("*", (e) => {
+      this.setState({ user: new User(e.record) })
+    }, contractorExpands)
+    this.setState({ user: new User(userData.record), notification: state.notification /* reset notifications */ })
     this.actions.redirect()
   },
 
@@ -36,10 +47,8 @@ const actions = {
     if (!email || !password) return
 
     try {
-      const auth = await pb.collection("contractors").authWithPassword(email, password,
-        { expand: "projects.client,deliveries(contractor).project" })
-      localStorage.setItem("auth", JSON.stringify(auth.record))
-      this.actions.authenticate(auth.record)
+      const auth = await pb.collection("contractors").authWithPassword(email, password)
+      this.actions.authenticate()
     }
     catch (error) {
       if (error.response?.code === 400) {
