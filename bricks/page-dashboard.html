@@ -23,45 +23,44 @@
 <template>
   <div class="row g-6" id="amounts">
     <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total des gains"
-      :content="state.user.totals.deliveries.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })" description="Total de la cagnotte" icon="credit-card" color="tertiary">
+      :content="state.user.totals.deliveries.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })"
+      description="Total des montants versés et disponibles" icon="credit-card" color="tertiary">
     </lg-card-stats>
 
-    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Cagnotte disponible" :content="state.user.totals.validated.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })"
+    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Cagnotte disponible"
+      :content="state.user.totals.validated.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })"
       description="Total reçu des différents livrables validés" icon="minecart-loaded" color="success"></lg-card-stats>
 
-    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Cagnotte en attente" :content="state.user.totals.pending.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })"
+    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Cagnotte en attente"
+      :content="state.user.totals.pending.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })"
       description="Total en attente de validation des clients" icon="clock-history" color="warning"></lg-card-stats>
   </div>
   <div class="row">
-    <!-- Livrables -->
+    <!-- Règlements -->
     <div class="card g-6">
       <div class="card-header border-bottom">
-        <h5 class="mb-0">Opérations</h5>
+        <h5 class="mb-0">Règlements</h5>
       </div>
       <p :if="!state.user.deliveries.length" class="text-sm lh-relaxed m-4">Aucun projet livré pour l'instant…</p>
       <div class="table-responsive">
         <table :if="state.user.deliveries.length" class="table table-hover table-nowrap">
           <thead class="table-light">
             <tr>
-              <th scope="col">Projet</th>
-              <th scope="col">Du</th>
-              <th scope="col">Au</th>
+              <th scope="col">Date</th>
               <th scope="col">Montant</th>
               <th scope="col">État</th>
               <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
-            <tr :for="delivery in state.user.deliveries">
-              <td>Livrable</td>
-              <td>${new Date(delivery.start).toLocaleDateString()}</td>
-              <td>${new Date(delivery.end).toLocaleDateString()}</td>
-              <td>${delivery.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}</td>
+            <tr :for="transfer in state.user.transfers">
+              <td>${new Date(transfer.date).toLocaleDateString()}</td>
+              <td>${transfer.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}</td>
               <td>
-                <span :if="delivery.status == 'pending'" class="badge badge-pill bg-warning me-2">
+                <span :if="transfer.status == 'pending'" class="badge badge-pill bg-warning me-2">
                   <i class="bi bi-hourglass-split"></i> En attente
                 </span>
-                <span :if="delivery.status == 'validated'" class="badge badge-pill bg-success me-2">
+                <span :if="transfer.status == 'validated'" class="badge badge-pill bg-success me-2">
                   <i class="bi bi-check-circle"></i> Validé
                 </span>
               </td>
@@ -69,12 +68,49 @@
           </tbody>
         </table>
       </div>
-      <!-- <footer>
+
+      <!-- Livrables -->
+      <div class="card g-6">
+        <div class="card-header border-bottom">
+          <h5 class="mb-0">Livrables</h5>
+        </div>
+        <p :if="!state.user.deliveries.length" class="text-sm lh-relaxed m-4">Aucun projet livré pour l'instant…</p>
+        <div class="table-responsive">
+          <table :if="state.user.deliveries.length" class="table table-hover table-nowrap">
+            <thead class="table-light">
+              <tr>
+                <th scope="col">Projet</th>
+                <th scope="col">Du</th>
+                <th scope="col">Au</th>
+                <th scope="col">Montant</th>
+                <th scope="col">État</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr :for="delivery in state.user.deliveries">
+                <td>Livrable</td>
+                <td>${new Date(delivery.start).toLocaleDateString()}</td>
+                <td>${new Date(delivery.end).toLocaleDateString()}</td>
+                <td>${delivery.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}</td>
+                <td>
+                  <span :if="delivery.status == 'pending'" class="badge badge-pill bg-warning me-2">
+                    <i class="bi bi-hourglass-split"></i> En attente
+                  </span>
+                  <span :if="delivery.status == 'validated'" class="badge badge-pill bg-success me-2">
+                    <i class="bi bi-check-circle"></i> Validé
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- <footer>
         <a class="btn" href="/deliveries/add">Ajouter un livrable</button>
       </footer> -->
-    </div>
-    <!-- Mes projets -->
-    <!-- <div class="col col-xl-4">
+      </div>
+      <!-- Mes projets -->
+      <!-- <div class="col col-xl-4">
       <div class="card h-lg-full">
         <div class="card-header">
           <div class="d-flex align-items-center">
@@ -92,9 +128,9 @@
       </div>
     </div>
   </div> -->
-  <!-- Row 3 -->
-  <!-- Latest tasks -->
-  <!-- <div class="col-xl-8">
+      <!-- Row 3 -->
+      <!-- Latest tasks -->
+      <!-- <div class="col-xl-8">
             <div class="card">
               <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">

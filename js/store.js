@@ -11,6 +11,7 @@ class User {
     deliveries.sort((a, b) => a.end > b.end ? -1 : 1)
     Object.assign(this, userData, {
       projects: userData.expand?.projects || [],
+      transfers: [],
       deliveries,
       totals: {
         deliveries: deliveries.reduce((total, delivery) => total + delivery.amount, 0) * .95,
