@@ -1,15 +1,12 @@
-const env = document.location.hostname.includes("localhost")
-  ? "dev"
-  : "prod"
+const env = document.location.hostname.includes("localhost") ? "dev" : "prod"
 
 const config = {
-  "dev": {
-    // "apiUrl": "http://127.0.0.1:8090",
-    "apiUrl": "https://ma.consulterie.fr",
+  dev: {
+    apiUrl: "http://localhost:3000",
   },
-  "prod": {
-    "apiUrl": "",
-  }
+  prod: {
+    apiUrl: "https://ma.consulterie.fr/api/",
+  },
 }
 
 export default config[env]

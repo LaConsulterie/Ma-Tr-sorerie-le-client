@@ -15,7 +15,7 @@
   }
 
   function authRequired(ctx, next) {
-    if(store.state.user.id) next()
+    if(store.state.user.isAuthenticated) next()
     else page.redirect("/login")
   }
 

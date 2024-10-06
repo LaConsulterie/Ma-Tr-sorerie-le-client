@@ -1,24 +1,48 @@
 import config from "../config.js"
 import { LegoStore } from "./vendors/store.js"
-import PocketBase from "/node_modules/pocketbase/dist/pocketbase.es.js"
 import page from "/node_modules/page/page.mjs"
 
-const pb = new PocketBase(config.apiUrl)
+function api(url, options = {}) {
+  const apiToken = localStorage.getItem("token") || ""
+  let queryParams = ""
+  if (!options.method || options.method.toLowerCase() === "get") {
+    queryParams = "?" + new URLSearchParams(options.body)
+    delete options.body
+  }
+  if (options.body) options.body = JSON.stringify(options.body)
+
+  options = {
+    ...{
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: apiToken,
+      },
+    },
+    ...options,
+  }
+
+  return fetch(`${config.apiUrl}${url}`, options)
+}
 
 class User {
   constructor(userData = {}) {
     const deliveries = userData.expand?.["deliveries(contractor)"] || []
-    deliveries.sort((a, b) => a.end > b.end ? -1 : 1)
+    deliveries.sort((a, b) => (a.end > b.end ? -1 : 1))
     Object.assign(this, userData, {
       projects: userData.expand?.projects || [],
       transfers: [],
       deliveries,
       totals: {
-        deliveries: deliveries.reduce((total, delivery) => total + delivery.amount, 0) * .95,
-        pending: deliveries.filter(d => d.status == "pending").reduce((total, d) => total + d.amount, 0) * .95,
-        validated: deliveries.filter(d => d.status === "validated").reduce((total, d) => total + d.amount, 0) * .95,
-      }
+        deliveries: deliveries.reduce((total, delivery) => total + delivery.amount, 0) * 0.95,
+        pending: deliveries.filter((d) => d.status == "pending").reduce((total, d) => total + d.amount, 0) * 0.95,
+        validated: deliveries.filter((d) => d.status === "validated").reduce((total, d) => total + d.amount, 0) * 0.95,
+      },
     })
+  }
+
+  get isAuthenticated() {
+    return !!this.Email
   }
 }
 
@@ -29,47 +53,50 @@ const state = {
 
 const actions = {
   init() {
-    if(pb.authStore.isValid) {
-      this.actions.authenticate(pb.authStore.model)
-    }
+    const token = localStorage.getItem("token")
+    if (token) this.actions.authenticate()
   },
 
   async authenticate() {
-    const contractorExpands = { expand: "projects.client,deliveries(contractor).project" }
-    
-    const userData = await pb.collection('contractors').authRefresh(contractorExpands)
-    this.setState({ user: new User(userData.record), notification: state.notification /* reset notifications */ })
-    
-    pb.collection('contractors').subscribe("*", (e) => {
-      this.setState({ user: new User(e.record) })
-    }, contractorExpands)
-    
+    const response = await api("/me")
+    if (!response.ok) return this.actions.logout()
+    const user = await response.json()
+
+    this.setState({
+      user: new User(user),
+      // reset notifications
+      notification: state.notification,
+    })
+
     this.actions.redirect()
   },
 
   async login(email, password) {
     if (!email || !password) return
+    const response = await api("/login", {
+      method: "POST",
+      body: { email, password },
+    })
+    if (!response.ok) {
+      console.error(response.status, await response.text())
+      this.setState({
+        notification: { type: "danger", message: "Votre nom d'utilisateur ou votre mot de passe est incorrect." },
+      })
+    }
 
-    try {
-      const auth = await pb.collection("contractors").authWithPassword(email, password)
-      this.actions.authenticate()
-    }
-    catch (error) {
-      if (error.response?.code === 400) {
-        this.setState({ notification: { type: "danger", message: "Votre nom d'utilisateur ou votre mot de passe est incorrect." } })
-      } else throw error
-      return
-    }
+    const { token } = await response.json()
+    localStorage.setItem("token", token)
+    this.actions.authenticate()
   },
 
   async logout() {
-    pb.authStore.clear()
+    localStorage.removeItem("token")
     this.setState(state)
   },
 
-  redirect(url="/") {
+  redirect(url = "/") {
     page.redirect(url)
-  }
+  },
 }
 
 const store = new LegoStore(state, actions)
@@ -77,5 +104,8 @@ store.actions.init()
 
 // inject for export
 store.page = page
+
+// Globally available in the browser for convenience
+window.store = store
 
 export default store
