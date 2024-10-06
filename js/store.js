@@ -27,18 +27,7 @@ function api(url, options = {}) {
 
 class User {
   constructor(userData = {}) {
-    const deliveries = userData.expand?.["deliveries(contractor)"] || []
-    deliveries.sort((a, b) => (a.end > b.end ? -1 : 1))
-    Object.assign(this, userData, {
-      projects: userData.expand?.projects || [],
-      transfers: [],
-      deliveries,
-      totals: {
-        deliveries: deliveries.reduce((total, delivery) => total + delivery.amount, 0) * 0.95,
-        pending: deliveries.filter((d) => d.status == "pending").reduce((total, d) => total + d.amount, 0) * 0.95,
-        validated: deliveries.filter((d) => d.status === "validated").reduce((total, d) => total + d.amount, 0) * 0.95,
-      },
-    })
+    Object.assign(this, userData)
   }
 
   get isAuthenticated() {
@@ -49,6 +38,11 @@ class User {
 const state = {
   user: new User(),
   notification: { type: "danger", message: "" },
+  financial: {
+    totals: [0, 0, 0],
+    deliveries: [],
+    transfers: [],
+  },
 }
 
 const actions = {
@@ -96,6 +90,12 @@ const actions = {
 
   redirect(url = "/") {
     page.redirect(url)
+  },
+
+  async loadFinancialData() {
+    const response = await api("/financial")
+    const data = await response.json()
+    this.setState({ financial: data })
   },
 }
 

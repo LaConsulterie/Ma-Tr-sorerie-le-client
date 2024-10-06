@@ -7,6 +7,7 @@
   const state = {
     user: {},
     userAvatarUrl: "",
+    financial: {},
   }
 
   const methods = {
@@ -15,24 +16,29 @@
     }
   }
 
-  function setup() {
+  async function setup() {
     store.subscribe(this, Object.keys(state))
+
+  }
+  
+  async function connected() {
+    await store.actions.loadFinancialData()
   }
 </script>
 
 <template>
   <div class="row g-6" id="amounts">
     <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total des gains"
-      :content="state.user.totals.deliveries.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })"
+      :content="state.financial.totals[2]"
       description="Total des montants versés et disponibles" icon="credit-card" color="tertiary">
     </lg-card-stats>
 
     <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Cagnotte disponible"
-      :content="state.user.totals.validated.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })"
+      :content="state.financial.totals[0].toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })"
       description="Total reçu des différents livrables validés" icon="minecart-loaded" color="success"></lg-card-stats>
 
     <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Cagnotte en attente"
-      :content="state.user.totals.pending.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })"
+      :content="state.financial.totals[1].toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })"
       description="Total en attente de validation des clients" icon="clock-history" color="warning"></lg-card-stats>
   </div>
   <div class="row">
@@ -41,9 +47,9 @@
       <div class="card-header border-bottom">
         <h5 class="mb-0">Règlements</h5>
       </div>
-      <p :if="!state.user.deliveries.length" class="text-sm lh-relaxed m-4">Aucun projet livré pour l'instant…</p>
+      <p :if="!state.financial.deliveries.length" class="text-sm lh-relaxed m-4">Aucun projet livré pour l'instant…</p>
       <div class="table-responsive">
-        <table :if="state.user.deliveries.length" class="table table-hover table-nowrap">
+        <table :if="state.financial.deliveries.length" class="table table-hover table-nowrap">
           <thead class="table-light">
             <tr>
               <th scope="col">Date</th>
@@ -53,7 +59,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr :for="transfer in state.user.transfers">
+            <tr :for="transfer in state.financial.transfers">
               <td>${new Date(transfer.date).toLocaleDateString()}</td>
               <td>${transfer.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}</td>
               <td>
@@ -74,9 +80,9 @@
         <div class="card-header border-bottom">
           <h5 class="mb-0">Livrables</h5>
         </div>
-        <p :if="!state.user.deliveries.length" class="text-sm lh-relaxed m-4">Aucun projet livré pour l'instant…</p>
+        <p :if="!state.financial.deliveries.length" class="text-sm lh-relaxed m-4">Aucun projet livré pour l'instant…</p>
         <div class="table-responsive">
-          <table :if="state.user.deliveries.length" class="table table-hover table-nowrap">
+          <table :if="state.financial.deliveries.length" class="table table-hover table-nowrap">
             <thead class="table-light">
               <tr>
                 <th scope="col">Projet</th>
@@ -88,10 +94,10 @@
               </tr>
             </thead>
             <tbody>
-              <tr :for="delivery in state.user.deliveries">
+              <tr :for="delivery in state.financial.deliveries">
                 <td>Livrable</td>
-                <td>${new Date(delivery.start).toLocaleDateString()}</td>
-                <td>${new Date(delivery.end).toLocaleDateString()}</td>
+                <td>${new Date(delivery.start*1000).toLocaleDateString()}</td>
+                <td>${new Date(delivery.end*1000).toLocaleDateString()}</td>
                 <td>${delivery.amount.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })}</td>
                 <td>
                   <span :if="delivery.status == 'pending'" class="badge badge-pill bg-warning me-2">
