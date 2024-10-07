@@ -4,4 +4,8 @@ function currency(amount = 0) {
   return amount ? amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) : ""
 }
 
-export default { md5, currency }
+function date(d) {
+  return new Date(d * 1000).toLocaleDateString()
+}
+
+export default { md5, currency, date }
