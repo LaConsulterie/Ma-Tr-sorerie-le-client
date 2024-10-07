@@ -2,7 +2,7 @@
   import store from '/js/store.js'
   import utils from '/js/utils.js'
 
-  const { md5 } = utils
+  const { md5, currency } = utils
 
   const state = {
     user: {},
@@ -29,16 +29,16 @@
 <template>
   <div class="row g-6" id="amounts">
     <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total des gains"
-      :content="state.financial.totals[2]"
+      :content="currency(state.financial.totals.all)"
       description="Total des montants versés et disponibles" icon="credit-card" color="tertiary">
     </lg-card-stats>
 
     <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Cagnotte disponible"
-      :content="state.financial.totals[0].toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })"
+      :content="currency(state.financial.totals.paid)"
       description="Total reçu des différents livrables validés" icon="minecart-loaded" color="success"></lg-card-stats>
 
     <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Cagnotte en attente"
-      :content="state.financial.totals[1].toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' })"
+      :content="currency(state.financial.totals.pending)"
       description="Total en attente de validation des clients" icon="clock-history" color="warning"></lg-card-stats>
   </div>
   <div class="row">

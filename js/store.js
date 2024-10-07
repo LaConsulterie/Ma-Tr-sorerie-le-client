@@ -39,7 +39,7 @@ const state = {
   user: new User(),
   notification: { type: "danger", message: "" },
   financial: {
-    totals: [0, 0, 0],
+    totals: { all: 0, paid: 0, pending: 0 },
     deliveries: [],
     transfers: [],
   },
