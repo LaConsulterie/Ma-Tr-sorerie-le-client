@@ -42,6 +42,7 @@ const state = {
     totals: { all: 0, paid: 0, pending: 0 },
     deliveries: [],
     transfers: [],
+    payments: [],
   },
 }
 

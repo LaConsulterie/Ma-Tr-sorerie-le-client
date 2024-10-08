@@ -43,11 +43,10 @@
   </div>
   <div class="row">
     <!-- Règlements -->
-    <div class="card g-6">
+    <div class="card g-6" :if="state.financial.payments.length">
       <div class="card-header border-bottom">
         <h5 class="mb-0">Règlements</h5>
       </div>
-      <p :if="!state.financial.deliveries.length" class="text-sm lh-relaxed m-4">Aucun projet livré pour l'instant…</p>
       <div class="table-responsive">
         <table :if="state.financial.deliveries.length" class="table table-hover table-nowrap">
           <thead class="table-light">
@@ -74,8 +73,10 @@
           </tbody>
         </table>
       </div>
-
+    </div>
       <!-- Livrables -->
+    <div class="card g-6" :if="state.financial.deliveries?.length">
+
       <div class="card g-6">
         <div class="card-header border-bottom">
           <h5 class="mb-0">Livrables</h5>
