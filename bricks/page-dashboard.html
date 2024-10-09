@@ -40,8 +40,6 @@
     <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Cagnotte en attente"
       :content="currency(state.financial.totals.pending)"
       description="Total des livrables en attente de validation" icon="clock-history" color="warning"></lg-card-stats>
-
-    <small style="font-size: .7em; font-style: italic;">Ces montants sont indicatifs. Le montant réel qui vous est attribuable est à valider auprès de votre conseiller.</small>
   </div>
   <div class="row">
     <!-- Règlements -->
@@ -255,4 +253,7 @@
               </div>
             </div>
           </div> -->
+    <footer style="margin: 3rem 0 1rem 0">
+      <small style="font-size: .7em; font-style: italic;">Ces montants sont indicatifs. Le montant réel qui vous est attribuable est à valider auprès de votre conseiller.</small>
+    </footer>
 </template>
