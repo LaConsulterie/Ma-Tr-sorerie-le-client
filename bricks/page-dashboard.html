@@ -29,17 +29,17 @@
 <template>
   <div class="row g-6" id="amounts">
     <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total des gains"
-      :content="currency(state.financial.totals.all)"
-      description="Total des livrables" icon="credit-card" color="tertiary">
+      :content="currency(state.financial.totals.gained)"
+      description="Somme des livrables" icon="credit-card" color="tertiary">
     </lg-card-stats>
 
-    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Cagnotte disponible"
+    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Trésorerie récupérée"
       :content="currency(state.financial.totals.paid)"
-      description="Total des livrables validés" icon="minecart-loaded" color="success"></lg-card-stats>
+      description="Somme des paiements reçu" icon="minecart-loaded" color="success"></lg-card-stats>
 
-    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Cagnotte en attente"
-      :content="currency(state.financial.totals.pending)"
-      description="Total des livrables en attente de validation" icon="clock-history" color="warning"></lg-card-stats>
+    <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Trésorerie disponible"
+      :content="currency(state.financial.totals.available)"
+      description="Somme disponible encaissable" icon="clock-history" color="warning"></lg-card-stats>
   </div>
   <div class="row">
     <!-- Règlements -->
