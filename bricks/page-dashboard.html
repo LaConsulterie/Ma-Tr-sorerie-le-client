@@ -30,16 +30,18 @@
   <div class="row g-6" id="amounts">
     <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Total des gains"
       :content="currency(state.financial.totals.all)"
-      description="Total des montants versés et disponibles" icon="credit-card" color="tertiary">
+      description="Total des livrables" icon="credit-card" color="tertiary">
     </lg-card-stats>
 
     <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Cagnotte disponible"
       :content="currency(state.financial.totals.paid)"
-      description="Total reçu des différents livrables validés" icon="minecart-loaded" color="success"></lg-card-stats>
+      description="Total des livrables validés" icon="minecart-loaded" color="success"></lg-card-stats>
 
     <lg-card-stats class="col-xl-3 col-sm-6 col-12" title="Cagnotte en attente"
       :content="currency(state.financial.totals.pending)"
-      description="Total en attente de validation des clients" icon="clock-history" color="warning"></lg-card-stats>
+      description="Total des livrables en attente de validation" icon="clock-history" color="warning"></lg-card-stats>
+
+    <small style="font-size: .7em; font-style: italic;">Ces montants sont indicatifs. Le montant réel qui vous est attribuable est à valider auprès de votre conseiller.</small>
   </div>
   <div class="row">
     <!-- Règlements -->
@@ -54,21 +56,19 @@
               <th scope="col">Date</th>
               <th scope="col">Montant</th>
               <th scope="col">État</th>
-              <th scope="col"></th>
+              <th scope="col">Description</th>
             </tr>
           </thead>
           <tbody>
-            <tr :for="transfer in state.financial.transfers">
-              <td>${date(transfer.date)}</td>
-              <td>${currency(transfer.amount)}</td>
+            <tr :for="payment in state.financial.payments">
+              <td>${date(payment.Date)}</td>
+              <td>${currency(payment.Amount)}</td>
               <td>
-                <span :if="!transfer.status == 'paid'" class="badge badge-pill bg-warning me-2">
-                  <i class="bi bi-hourglass-split"></i> En attente
-                </span>
-                <span :if="transfer.status == 'paid'" class="badge badge-pill bg-success me-2">
-                  <i class="bi bi-check-circle"></i> Validé
+                <span class="badge badge-pill bg-success me-2">
+                  <i class="bi bi-check-circle"></i> réglé
                 </span>
               </td>
+              <td>${payment.Description}</td>
             </tr>
           </tbody>
         </table>
