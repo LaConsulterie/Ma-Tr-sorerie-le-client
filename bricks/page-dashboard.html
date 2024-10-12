@@ -73,7 +73,7 @@
       </div>
     </div>
       <!-- Livrables -->
-    <div class="card g-6" :if="state.financial.deliveries?.length">
+    <div class="deliveries card g-6" :if="state.financial.deliveries?.length">
 
       <div class="card g-6">
         <div class="card-header border-bottom">
@@ -94,10 +94,10 @@
             </thead>
             <tbody>
               <tr :for="delivery in state.financial.deliveries">
-                <td>Livrable</td>
+                <td>${delivery.project}</td>
                 <td>${date(delivery.start)}</td>
                 <td>${date(delivery.end)}</td>
-                <td>${currency(delivery.amount)}</td>
+                <td class="amount">${currency(delivery.amount)}<small>${currency(delivery.amount_to_claim)}</small></td>
                 <td>
                   <span :if="delivery.status != 'paid'" class="badge badge-pill bg-warning me-2">
                     <i class="bi bi-hourglass-split"></i> En attente
@@ -257,3 +257,12 @@
       <small style="font-size: .7em; font-style: italic;">Ces montants sont indicatifs. Le montant réel qui vous est attribuable est à valider auprès de votre conseiller.</small>
     </footer>
 </template>
+
+<style>
+  .deliveries .amount small {
+    display: block;
+    color: #aaa;
+    font-size: .88em;
+    font-style: italic;
+  }
+</style>
