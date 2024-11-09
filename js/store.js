@@ -35,15 +35,17 @@ class User {
   }
 }
 
+const defaultFinancial = {
+  totals: { all: 0, paid: 0, pending: 0 },
+  deliveries: [],
+  transfers: [],
+  payments: [],
+}
+
 const state = {
   user: new User(),
   notification: { type: "danger", message: "" },
-  financial: {
-    totals: { all: 0, paid: 0, pending: 0 },
-    deliveries: [],
-    transfers: [],
-    payments: [],
-  },
+  financial: defaultFinancial,
 }
 
 const actions = {
@@ -96,7 +98,7 @@ const actions = {
   async loadFinancialData() {
     const response = await api("/financial")
     const data = await response.json()
-    this.setState({ financial: data })
+    this.setState({ financial: { ...defaultFinancial, ...data } })
   },
 }
 
